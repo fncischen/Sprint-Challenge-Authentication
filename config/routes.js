@@ -16,11 +16,9 @@ module.exports = server => {
 
 function register(req, res) {
 
+  user = req.body; 
   let password = bcrypt.hashSync(req.body.password);
-  let user = {
-    username: req.body.username,
-    password: password
-  }
+  user.password = password; 
 
    db("users").insert(user)
     .then(() => res.status(200).json({message: "User successfully registered."}))
@@ -30,13 +28,12 @@ function register(req, res) {
 
 function login(req, res) {
 
-  let username = req.body.username;
-  let password = req.body.password;
+  let {username,password} = req.body;
 
-  db("users").where("username", username).then(
+  db("users").where({username}).then(
     user => {
 
-      if(bcrypt.compareSync(password,user.password)) {
+      if(user && bcrypt.compareSync(password,user.password) )  {
         let token = generateToken(user);
 
         localStorage.setItem(userToken, token); 
@@ -86,5 +83,5 @@ function generateToken(user) {
     algorithm:  "RS256"
   }; 
 
-  return jwt.sign(payload,secretKey,options);
+  return jwt.sign(payload,secretKey,signOptions);
 }
