@@ -33,13 +33,12 @@ function login(req, res) {
   db("users").where({username}).then(
     user => {
 
-      if(user && bcrypt.compareSync(password,user.password) )  {
+      if(user && bcrypt.compareSync(password,user[0].password) )  {
         let token = generateToken(user);
 
-        localStorage.setItem(userToken, token); 
-
-        res.status(201).json({message: `Welcome, ${user.username}!`,
-                        userToken: token})
+        // localStorage.setItem(userToken, token); 
+        console.log("You've logged in!");
+        res.status(200).send(token);
       }
       else {
         res.status(401).json({errorMessage: "Incorrect password entered. Pleae enter a different password"})
@@ -53,7 +52,6 @@ function getJokes(req, res) {
     headers: { accept: 'application/json' },
   };
 
-  if(requestOptions.headers.token) {
     axios
       .get('https://icanhazdadjoke.com/search', requestOptions)
       .then(response => {
@@ -63,10 +61,7 @@ function getJokes(req, res) {
       res.status(500).json({ message: 'Error Fetching Jokes', error: err });
     });
   }
-  else {
-      res.status(401).json({errorMessage: "This is a restricted area, and you need a token to access this data."})
-  }
-}
+
 
 //#endregion
 
@@ -80,7 +75,6 @@ function generateToken(user) {
 
   let signOptions = {
     expiresIn: "24h",
-    algorithm:  "RS256"
   }; 
 
   return jwt.sign(payload,secretKey,signOptions);
