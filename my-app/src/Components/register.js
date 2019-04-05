@@ -13,13 +13,15 @@ export default class Register extends Component {
     }
 
     onSubmit = e => {
+        e.preventDefault();
+
         const user = {
             username: this.state.username,
             password: this.state.password
         }
 
-        axios.post(`https://localhost:3300/api/register`,user)
-        .then(() => console.log("You have successfully registered"))
+        axios.post(`https://localhost:3300/api/register`, user)
+        .then((response) => console.log(response))
         .catch(err => console.log(err));
     }
 
@@ -32,7 +34,7 @@ export default class Register extends Component {
         
         return(
         <div className="Register">
-            <form onSubmit={this.onSubmit}>
+            <form onSubmit={() => this.onSubmit}>
                 <label>Username:</label>
                 <input type="text" name="username" onChange={this.handleChange}></input>
                 
