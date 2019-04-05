@@ -56,14 +56,19 @@ function getJokes(req, res) {
     headers: { accept: 'application/json' },
   };
 
-  axios
-    .get('https://icanhazdadjoke.com/search', requestOptions)
-    .then(response => {
+  if(requestOptions.headers.token) {
+    axios
+      .get('https://icanhazdadjoke.com/search', requestOptions)
+      .then(response => {
       res.status(200).json(response.data.results);
-    })
+      })
     .catch(err => {
       res.status(500).json({ message: 'Error Fetching Jokes', error: err });
     });
+  }
+  else {
+      res.status(401).json({errorMessage: "This is a restricted area, and you need a token to access this data."})
+  }
 }
 
 //#endregion
